@@ -40,7 +40,6 @@ def get_args_parser():
     # Model parameters
     parser.add_argument('--model', default='mae_vit_large_patch16', type=str, metavar='MODEL',
                         help='Name of model to train')
-    parser.add_argument('--dataset_name', default='imagenet_c', type=str)
     parser.add_argument('--input_size', default=224, type=int,
                         help='images input size')
     parser.add_argument('--classifier_depth', type=int, metavar='N', default=0,
@@ -88,11 +87,7 @@ def get_args_parser():
     parser.set_defaults(verbose=False)
     parser.add_argument('--head_type', default='vit_head',
                         help='Head type - linear or vit_head')
-    parser.add_argument('--rec_loss', action='store_true',
-                        help='Online training')
-    parser.add_argument('--no_rec_loss', action='store_false', dest='rec_loss')
-    parser.set_defaults(rec_loss=True)
-
+    
     parser.add_argument('--single_crop', action='store_true',
                         help='single_crop training')
     parser.add_argument('--no_single_crop', action='store_false', dest='single_crop')
@@ -180,7 +175,6 @@ def main(args):
             transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])])
         
     data_path = args.data_path
-    # Handle preemption
 
     dataset_train = tt_image_folder.ExtendedImageFolder(data_path, transform=transform_train, minimizer=None, 
                                                         batch_size=args.batch_size, steps_per_example=args.steps_per_example * args.accum_iter, 

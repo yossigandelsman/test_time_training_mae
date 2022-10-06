@@ -72,7 +72,7 @@ cd checkpoints
 wget https://dl.fbaipublicfiles.com/mae/share/prob_lr1e-3_wd.2_blk12_ep20.pth
 ```
 
-### Test-time Training
+### Test-time training
 
 To train the model, you will first need to download the `imagenet-c` dataset, from [here](https://zenodo.org/record/2235448#.Yz9OHezMKFw).
 
@@ -84,6 +84,7 @@ DATASET='gaussian_noise'
 LEVEL='5'
 RESUME_MODEL='checkpoints/mae_pretrain_vit_large_full.pth'
 RESUME_FINETUNE='checkpoints/prob_lr1e-3_wd.2_blk12_ep20.pth'
+OUTPUT_DIR_BASE='...'
 
 python main_test_time_training.py \
     --data_path "$DATA_PATH_BASE/$DATASET/$LEVEL" \
@@ -104,6 +105,26 @@ python main_test_time_training.py \
     --finetune_mode 'encoder' \
     --resume_model ${RESUME_MODEL} \
     --resume_finetune ${RESUME_FINETUNE}
+```
+
+### Baseline evaluation
+To evaluate the model without applying test-time training, run:
+```bash
+DATA_PATH_BASE='path_to_imagenet-c'
+DATASET='gaussian_noise'
+LEVEL='5'
+RESUME_MODEL='checkpoints/mae_pretrain_vit_large_full.pth'
+RESUME_FINETUNE='checkpoints/prob_lr1e-3_wd.2_blk12_ep20.pth'
+OUTPUT_DIR_BASE='...'
+python test_without_adaptation.py \
+        --data_path "$DATA_PATH_BASE/$DATASET/$LEVEL" \
+        --model mae_vit_large_patch16 \
+        --input_size 224 \
+        --resume_model ${RESUME_MODEL} \
+        --resume_finetune ${RESUME_FINETUNE} \
+        --output_dir "$OUTPUT_DIR_BASE/$DATASET/baseline" \
+        --classifier_depth 12 \
+        --head_type "vit_head" 
 ```
 
 ### BibTeX
