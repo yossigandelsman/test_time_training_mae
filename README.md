@@ -44,10 +44,37 @@ cd checkpoints
 wget https://dl.fbaipublicfiles.com/mae/pretrain/mae_pretrain_vit_large_full.pth
 ```
 
+### Training the classification head
+To train the classification head, run this:
+```bash
+TIME=$(date +%s%3N)
+DATA_PATH='...'
+OUTPUT_DIR='...'
+RESUME_MODEL='checkpoints/mae_pretrain_vit_large_full.pth'
+python -m torch.distributed.launch --nproc_per_node=8 main_prob.py \
+        --batch_size 32 \
+        --accum_iter 4 \
+        --model mae_vit_large_patch16 \
+        --finetune ${RESUME_MODEL} \
+        --epochs 20 \
+        --input_size 224 \
+        --head_type vit_head \
+        --blr 1e-3 \
+        --norm_pix_loss \
+        --weight_decay 0.2 \
+        --dist_eval --data_path ${DATA_PATH} --output_dir ${OUTPUT_DIR}
+```
+Alternatively, you can use a pretrained model (with slightly different parameters) from [here](https://dl.fbaipublicfiles.com/mae/share/prob_lr1e-3_wd.2_blk12_ep20.pth)
+
+```bash
+mkdir checkpoints
+cd checkpoints
+wget https://dl.fbaipublicfiles.com/mae/share/prob_lr1e-3_wd.2_blk12_ep20.pth
+```
 
 ### BibTeX
 
-bibtex```
+```bibtex
 @article{maettt, 
         title={Test-Time Training with Masked Autoencoders},
         author={Gandelsman, Yossi and Sun, Yu and Chen, Xinlei and Efros, Alexei A.},

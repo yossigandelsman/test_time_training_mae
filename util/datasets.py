@@ -15,7 +15,6 @@ from torchvision import datasets, transforms
 
 from timm.data import create_transform
 from timm.data.constants import IMAGENET_DEFAULT_MEAN, IMAGENET_DEFAULT_STD
-from data.rotations_dataset import RotateImageFolder
 
 
 def build_dataset(is_train, args):
@@ -24,10 +23,7 @@ def build_dataset(is_train, args):
         root = args.data_path
     else:
         root = os.path.join(args.data_path, 'train') if is_train else os.path.join(args.data_path, 'val')
-    if hasattr(args, 'predict_rotations') and args.predict_rotations:
-        dataset = RotateImageFolder(root, train_transform=transform)
-    else:
-        dataset = datasets.ImageFolder(root, transform=transform)
+    dataset = datasets.ImageFolder(root, transform=transform)
     print(dataset)
 
     return dataset
