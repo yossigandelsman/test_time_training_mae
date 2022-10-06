@@ -36,4 +36,22 @@ python -m torch.distributed.launch --nproc_per_node=8 main_pretrain.py \
         --dist_url "file://$OUTPUT_DIR/$TIME"
 ```
 
-Alternatively, you can use a pretrained large VIT model from [here](https://dl.fbaipublicfiles.com/mae/pretrain/mae_pretrain_vit_large_full.pth).
+Alternatively, you can use a pretrained large VIT model from [here](https://dl.fbaipublicfiles.com/mae/pretrain/mae_pretrain_vit_large_full.pth):
+
+```bash
+mkdir checkpoints
+cd checkpoints
+wget https://dl.fbaipublicfiles.com/mae/pretrain/mae_pretrain_vit_large_full.pth
+```
+
+
+### BibTeX
+
+bibtex```
+@article{maettt, 
+        title={Test-Time Training with Masked Autoencoders},
+        author={Gandelsman, Yossi and Sun, Yu and Chen, Xinlei and Efros, Alexei A.},
+        year={2022},
+        journal={arXiv preprint arXiv:2209.07522}
+}
+```
