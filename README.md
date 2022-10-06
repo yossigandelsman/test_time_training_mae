@@ -64,12 +64,46 @@ python -m torch.distributed.launch --nproc_per_node=8 main_prob.py \
         --weight_decay 0.2 \
         --dist_eval --data_path ${DATA_PATH} --output_dir ${OUTPUT_DIR}
 ```
-Alternatively, you can use a pretrained model (with slightly different parameters) from [here](https://dl.fbaipublicfiles.com/mae/share/prob_lr1e-3_wd.2_blk12_ep20.pth)
+Alternatively, you can use a pretrained model (with slightly different parameters) from [here](https://dl.fbaipublicfiles.com/mae/share/prob_lr1e-3_wd.2_blk12_ep20.pth):
 
 ```bash
 mkdir checkpoints
 cd checkpoints
 wget https://dl.fbaipublicfiles.com/mae/share/prob_lr1e-3_wd.2_blk12_ep20.pth
+```
+
+### Test-time Training
+
+To train the model, you will first need to download the `imagenet-c` dataset, from [here](https://zenodo.org/record/2235448#.Yz9OHezMKFw).
+
+After extracting the dataset, you can run test-time training on each of the test sets:
+
+```bash
+DATA_PATH_BASE='path_to_imagenet-c'
+DATASET='gaussian_noise'
+LEVEL='5'
+RESUME_MODEL='checkpoints/mae_pretrain_vit_large_full.pth'
+RESUME_FINETUNE='checkpoints/prob_lr1e-3_wd.2_blk12_ep20.pth'
+
+python main_test_time_training.py \
+    --data_path "$DATA_PATH_BASE/$DATASET/$LEVEL" \
+    --model mae_vit_large_patch16 \
+    --input_size 224 \
+    --batch_size 128 \
+    --steps_per_example 20 \
+    --mask_ratio 0.75 \
+    --blr 1e-2 \
+    --norm_pix_loss \
+    --optimizer_type 'sgd' \
+    --classifier_depth 12 \
+    --head_type "vit_head" \
+    --single_crop \
+    --dataset_name "imagenet_c" \
+    --output_dir "$OUTPUT_DIR_BASE/$DATASET/" \
+    --dist_url "file://$OUTPUT_DIR_BASE/$TIME" \
+    --finetune_mode 'encoder' \
+    --resume_model ${RESUME_MODEL} \
+    --resume_finetune ${RESUME_FINETUNE}
 ```
 
 ### BibTeX
