@@ -28,10 +28,10 @@ python -m torch.distributed.launch --nproc_per_node=8 main_pretrain.py \
         --input_size 224 \
         --batch_size 64 \
         --mask_ratio 0.75 \
-        --warmup_epochs 5 \
-        --epochs 90 \
-        --blr 1e-4 \
-        --save_ckpt_freq 30 \
+        --warmup_epochs 40 \
+        --epochs 800 \
+        --blr 1e-3 \
+        --save_ckpt_freq 100 \
         --output_dir ${OUTPUT_DIR}  \
         --dist_url "file://$OUTPUT_DIR/$TIME"
 ```
@@ -64,12 +64,12 @@ python -m torch.distributed.launch --nproc_per_node=8 main_prob.py \
         --weight_decay 0.2 \
         --dist_eval --data_path ${DATA_PATH} --output_dir ${OUTPUT_DIR}
 ```
-Alternatively, you can use a pretrained model (with slightly different parameters) from [here](https://dl.fbaipublicfiles.com/mae/share/prob_lr1e-3_wd.2_blk12_ep20.pth):
+Alternatively, you can use a pretrained model (with slightly different parameters) from [here](https://dl.fbaipublicfiles.com/mae/ttt/prob_lr1e-3_wd.2_blk12_ep20.pth):
 
 ```bash
 mkdir checkpoints
 cd checkpoints
-wget https://dl.fbaipublicfiles.com/mae/share/prob_lr1e-3_wd.2_blk12_ep20.pth
+wget https://dl.fbaipublicfiles.com/mae/ttt/prob_lr1e-3_wd.2_blk12_ep20.pth
 ```
 
 ### Test-time training
