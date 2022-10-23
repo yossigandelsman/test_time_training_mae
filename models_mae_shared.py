@@ -262,14 +262,12 @@ class MaskedAutoencoderViT(nn.Module):
             x = self.rotation_head(x)
         return x
 
-    def forward_loss(self, imgs, pred, mask, rotations=None):
+    def forward_loss(self, imgs, pred, mask):
         """
         imgs: [N, 3, H, W]
         pred: [N, L, p*p*3]
         mask: [N, L], 0 is keep, 1 is remove, 
         """
-        if self.rotation_prediction:
-            return self.criterion(pred, rotations)
         target = self.patchify(imgs)
 
         if self.norm_pix_loss:
@@ -305,31 +303,19 @@ class MaskedAutoencoderViT(nn.Module):
         loss = self.criterion(head, target) if target.dtype == torch.long else None
         return head, loss
 
-    def forward_head_with_pseudo_labels(self, latent, pseudo_labels):
-        if self.head_type != 'linear': raise ValueError('Unimplemented model')
-        head = self.head(self.bn(latent))
-        assert len(pseudo_labels.shape) == 1
-        labels = torch.gather(torch.softmax(head, axis=1), dim=1, 
-                              index=pseudo_labels.unsqueeze(0).repeat(head.shape[0], 1))
-        return head, - torch.mean(torch.log(torch.sum(labels, axis=1)))
-
-    def forward(self, imgs, target = None, mask_ratio: float = 0.75, input_mask=None, pseudo_labels=None, rotations=None, reconstruct=True):
+    def forward(self, imgs, target = None, mask_ratio: float = 0.75, input_mask=None, reconstruct=True):
         loss = {}
         latent, mask, ids_restore = self.forward_encoder(imgs, mask_ratio, input_mask)
-        if reconstruct and (mask_ratio != 0 or rotations is not None):
+        if reconstruct and (mask_ratio != 0):
             pred = self.forward_decoder(latent, ids_restore)  # [N, L, p*p*3]
-            loss['mae'] = self.forward_loss(imgs, pred, mask, rotations)
+            loss['mae'] = self.forward_loss(imgs, pred, mask)
         else:
             pred = None
-        if target is not None or pseudo_labels is not None:
-            if pseudo_labels is None:
-                if self.head_type == 'linear':
-                    head, criterion = self.forward_head(latent[:, 0], target)
-                else:
-                    head, criterion = self.forward_vit_head(latent, target)
+        if target is not None:
+            if self.head_type == 'linear':
+                head, criterion = self.forward_head(latent[:, 0], target)
             else:
-                assert self.head_type == 'linear', 'Unimplemented for huge head'
-                head, criterion = self.forward_head_with_pseudo_labels(latent[:, 0], pseudo_labels)    
+                head, criterion = self.forward_vit_head(latent, target)
             loss['classification'] = criterion
         else:
             head = None
