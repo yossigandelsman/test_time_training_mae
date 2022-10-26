@@ -58,10 +58,9 @@ def train_one_epoch(model: torch.nn.Module,
         labels = labels.to(device, non_blocking=True)
 
         with torch.cuda.amp.autocast():
-            loss_dict, _, _, pred = model(samples, labels, mask_ratio=args.mask_ratio)
+            loss_dict, _, _, pred = model(samples, target=None, mask_ratio=args.mask_ratio)
         
-        loss = 0.01 * loss_dict["classification"] + loss_dict["mae"]
-        # loss = torch.stack([loss_dict[l] for l in loss_dict]).sum()
+        loss = loss_dict["mae"]
         loss_value = loss.item()
 
         if not math.isfinite(loss_value):
