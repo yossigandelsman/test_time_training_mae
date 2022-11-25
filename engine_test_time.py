@@ -121,12 +121,11 @@ def train_on_test(base_model: torch.nn.Module,
         for step_per_example in range(args.steps_per_example * accum_iter):
             train_data = next(train_loader)
             # Train data are 2 values [image, class]
-            mask_ratio = args.mask_ratio if args.rec_loss else 0
+            mask_ratio = args.mask_ratio
             samples, _ = train_data
             targets_rot, samples_rot = None, None
             samples = samples.to(device, non_blocking=True)[0] # index [0] becuase the data is batched to have size 1.
-            loss_dict, _, _, _ = model(samples, None, mask_ratio=mask_ratio, 
-                                        pseudo_labels=None)
+            loss_dict, _, _, _ = model(samples, None, mask_ratio=mask_ratio)
             loss = torch.stack([loss_dict[l] for l in loss_dict]).sum()
             loss_value = loss.item()
             loss /= accum_iter
