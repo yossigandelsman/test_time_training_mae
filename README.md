@@ -130,10 +130,13 @@ python test_without_adaptation.py \
 ### BibTeX
 
 ```bibtex
-@article{maettt, 
+@inproceedings{
+        gandelsman2022testtime,
         title={Test-Time Training with Masked Autoencoders},
-        author={Gandelsman, Yossi and Sun, Yu and Chen, Xinlei and Efros, Alexei A.},
+        author={Yossi Gandelsman and Yu Sun and Xinlei Chen and Alexei A Efros},
+        booktitle={Advances in Neural Information Processing Systems},
+        editor={Alice H. Oh and Alekh Agarwal and Danielle Belgrave and Kyunghyun Cho},
         year={2022},
-        journal={arXiv preprint arXiv:2209.07522}
+        url={https://openreview.net/forum?id=SHMi1b7sjXk}
 }
 ```
