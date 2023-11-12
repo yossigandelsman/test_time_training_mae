@@ -34,7 +34,7 @@ from util.misc import NativeScalerWithGradNormCount as NativeScaler
 
 
 def get_args_parser():
-    parser = argparse.ArgumentParser('MAE pre-training', add_help=False)
+    parser = argparse.ArgumentParser('MAE test time training', add_help=False)
     parser.add_argument('--print_freq', default=50, type=int)
     parser.add_argument('--finetune_mode', default='encoder', type=str, help='all, encoder, encoder_no_cls_no_msk.')
     # Model parameters
@@ -59,7 +59,8 @@ def get_args_parser():
     parser.add_argument('--batch_size', default=256, type=int,)
     parser.add_argument('--data_path', default='', type=str,
                         help='dataset path')
-
+    parser.add_argument('--dataset_name', default='imagenet_c', type=str,
+                        help='dataset name')
     parser.add_argument('--output_dir', default='./output_dir',
                         help='path where to save, empty for no saving')
     parser.add_argument('--log_dir', default='./output_dir',
